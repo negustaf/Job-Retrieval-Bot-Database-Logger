@@ -66,18 +66,25 @@ def scrapeByPosition(positionName): #scrapes data from the entire united states 
 
     resultList = []
     for i in range(len(positionTitles)):
-        tup = (positionTitles[i],companyList[i],urlList[i],locationList[i],dataIDlist[i])
-        resultList.append(tup)
+        try:
+            tup = (positionTitles[i],companyList[i],urlList[i],locationList[i],dataIDlist[i])
+            resultList.append(tup)
+        except:
+            return resultList
     return resultList
 
 def main():
 
-    aeList = scrapeByPosition("automotive-engineer")
+    '''aeList = scrapeByPosition("automotive-engineer")
     curAE, connAE = createDB("Automotive_Engineer.db")
-    writeDB(curAE, connAE, aeList)
+    writeDB(curAE, connAE, aeList)'''
 
     uxList = scrapeByPosition("ux-designer")
     curUX, connUX = createDB("ux_designer.db")
     writeDB(curUX,connUX, uxList)
+
+    iaList = scrapeByPosition('data-analyst')
+    curIA, connIA = createDB("data_analyst.db")
+    writeDB(curIA,connIA,iaList)
 if __name__ == '__main__':
     main()
