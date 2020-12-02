@@ -3,6 +3,7 @@ import requests
 #import re
 import os
 import sqlite3
+import time
 
 def createDB(dbName):
     try:
@@ -79,12 +80,22 @@ def main():
     curAE, connAE = createDB("Automotive_Engineer.db")
     writeDB(curAE, connAE, aeList)'''
 
+    print("Scraping data")
     uxList = scrapeByPosition("ux-designer")
+    
     curUX, connUX = createDB("ux_designer.db")
+
     writeDB(curUX,connUX, uxList)
 
+    print("\nData collected, pausing 10 seconds...\n")
+    time.sleep(10) #pauses the program so LinkedIn doesn't get suspicious
+
+    print("Scraping more data...")
     iaList = scrapeByPosition('data-analyst')
+    
     curIA, connIA = createDB("data_analyst.db")
+
     writeDB(curIA,connIA,iaList)
+    print("Done!")
 if __name__ == '__main__':
     main()
