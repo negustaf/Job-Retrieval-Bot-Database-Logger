@@ -87,8 +87,17 @@ def main():
 
     writeDB(curUX,connUX, uxList)
 
-    print("\nData collected, pausing 10 seconds...\n")
-    time.sleep(10) #pauses the program so LinkedIn doesn't get suspicious
+    print("\nData collected, pausing 10 seconds...")
+    print(".")
+    time.sleep(2) #pauses the program so LinkedIn doesn't get suspicious
+    print(".")
+    time.sleep(2)
+    print(".")
+    time.sleep(2)
+    print(".")
+    time.sleep(2)
+    print(".")
+    time.sleep(2)
 
     print("Scraping more data...")
     iaList = scrapeByPosition('data-analyst')
