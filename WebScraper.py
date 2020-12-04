@@ -81,5 +81,5 @@ class WebScraperBot:
 ^ Note On Print():
 "#job-retriever" slackChannel parameter is useless without importing "from slack import WebClient"
 
-See WebScraperTest.py for import.
+See RunWebScraperTest.py for import.
 '''
