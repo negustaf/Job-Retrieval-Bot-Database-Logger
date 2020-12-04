@@ -1,50 +1,63 @@
 # Noah Gustafson & Maxton Fil
 
-# commit 3
-
 from bs4 import BeautifulSoup
 import requests
-#import re
 import os
-#import csv
 
-# Function takes in keyword and locale as parameters representing a LinkedIn search keyword and location. 
-def jobTupsBySearchParams(keyword, locale):
+# Class to be imported to Slack bot.
+class WebScraper:
 
-    # Gets a list of job postings from the LinkedIn search page with specified keyword and locale params.
-    link = f'https://www.linkedin.com/jobs/search?keywords={keyword}&location={locale}-fl&redirect=false&position=1&pageNum=0'
-    soup = BeautifulSoup(requests.get(link).text, 'html.parser')
+    # __init__() takes in keyword and locale as parameters. Then the class constructor gets html from the param-specified LinkedIn jobs search page and sets soup as an instance.
+    def __init__(self, keyword, locale):
+        self.keyword = keyword
+        self.locale = locale
+        link = f'https://www.linkedin.com/jobs/search?keywords={keyword}&location={locale}-fl&redirect=false&position=1&pageNum=0'
+        self.soup = BeautifulSoup(requests.get(link).text, 'html.parser')
 
-    # Finds all h3 links with specified class 'result-card__full-card-link' in each job card and assigns them to aTags. 
-    aTags = soup.find_all('a', class_='result-card__full-card-link')
-
-    # Finds all job titles in aTags and appends them to positionTitles.
-    positionTitles = []
-    for tag in aTags:
-        title = tag.find('span', class_='screen-reader-text')
-        positionTitles.append(title.text)
-
-    # Finds all URLs in aTags and appends them to urlList.
-    urlList = []
-    for tag in aTags:
-        urlHref = tag['href']
-        urlList.append(urlHref)
-
-    # Finds all h4 links with specified class 'job-result-card__subtitle-link' in each job card and assigns them to aTags2. Finds all companies in aTags2 and appends them to companyList.
-    aTags2 = soup.find_all('a', class_='job-result-card__subtitle-link')
-    companyList = []
-    for tag in aTags2:
-        companyList.append(tag.text)
+    # fetchTitles() finds all h3 links with specified class 'result-card__full-card-link' in each job card and assigns them to aTags. Then it finds all job titles in aTags and appends them to positionTitles.
+    def fetchTitles(self):
+        aTags = self.soup.find_all('a', class_='result-card__full-card-link')
+        posTitles = []
+        for tag in aTags:
+            title = tag.find('span', class_='screen-reader-text')
+            posTitles.append(title.text)
+        return posTitles
     
-    # Takes lists from positionTitles, companyList, and urlList and returns the items from each list in a order-respective list of tuples.
-    resultList = []
-    for i in range(len(positionTitles)):
-        tup = (positionTitles[i],companyList[i],urlList[i])
-        resultList.append(tup)
-    return resultList
+    # fetchCompanies() finds all h4 links with specified class 'job-result-card__subtitle-link' in each job card and assigns them to aTags2. Then it finds all companies in aTags2 and appends them to companyLst.
+    def fetchCompanies(self):
+        aTags2 = self.soup.find_all('a', class_='job-result-card__subtitle-link')
+        posCompanies = []
+        for tag in aTags2:
+            posCompanies.append(tag.text)
+        return posCompanies
 
-def main():
-    print(jobTupsBySearchParams("product-designer", "california"))
+    # fetchURLs() again finds all h3 links with specified class 'result-card__full-card-link' in each job card and assigns them to aTags. Then it finds all URLs in aTags and appends them to urlList.
+    def fetchURLs(self):
+        aTags = self.soup.find_all('a', class_='result-card__full-card-link')
+        posURLs = []
+        for tag in aTags:
+            urlHref = tag['href']
+            posURLs.append(urlHref)
+        return posURLs
+    
+    # combinedPositionTups() takes lists from posTitles, posCompanies, and posURLs and returns the items from each list in an order-respective list of tuples.
+    def combinedPosTups(self):
+        positionsData = []
+        for i in range(len(self.fetchTitles())):
+            tup = (self.fetchTitles()[i], self.fetchCompanies()[i], self.fetchURLs()[i])
+            positionsData.append(tup)
+        return positionsData
+    
+    # A constant that contains the text displayed in the Slack message.
+    COIN_BLOCK = {
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": (
+                f"The five most recent {self.keyword} positions in {self.locale} are:\n\n{runWebScraper[:6]}\n\nClick here to see more data about the most recent {self.keyword} positions in {self.locale}."
+            ),
+        },
+    }
 
-if __name__ == '__main__':
-    main()
+runWebScraper = WebScraper('product-designer', 'california').combinedPosTups()
+print(runWebScraper)
