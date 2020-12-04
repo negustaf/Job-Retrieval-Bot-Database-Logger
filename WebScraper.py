@@ -5,10 +5,11 @@ import requests
 import os
 
 # Class to be imported to Slack bot.
-class WebScraper:
+class WebScraperBot:
 
-    # __init__() takes in keyword and locale as parameters. Then the class constructor gets html from the param-specified LinkedIn jobs search page and sets soup as an instance.
-    def __init__(self, keyword, locale):
+    # __init__() takes in slackChannel, keyword, and locale as parameters. Then the class constructor gets html from the param-specified LinkedIn jobs search page and sets soup as an instance.
+    def __init__(self, slackChannel, keyword, locale):
+        self.slackChannel = slackChannel
         self.keyword = keyword
         self.locale = locale
         link = f'https://www.linkedin.com/jobs/search?keywords={keyword}&location={locale}-fl&redirect=false&position=1&pageNum=0'
@@ -48,16 +49,37 @@ class WebScraper:
             positionsData.append(tup)
         return positionsData
     
-    # A constant that contains the text displayed in the Slack message.
-    COIN_BLOCK = {
-        "type": "section",
-        "text": {
-            "type": "mrkdwn",
-            "text": (
-                f"The five most recent {self.keyword} positions in {self.locale} are:\n\n{runWebScraper[:6]}\n\nClick here to see more data about the most recent {self.keyword} positions in {self.locale}."
-            ),
-        },
-    }
+    # insertPositionsIntoSlackMessageDict() takes combinedPosTups()'s returned tuple list of recent job position data and puts it into the Slack message dictionary.
+    def insertPositionsIntoSlackMessageDict(self):
+        text = self.combinedPosTups()
+        return {"type": "section", "text": {"type": "mrkdwn", "text": text}},
 
-runWebScraper = WebScraper('product-designer', 'california').combinedPosTups()
-print(runWebScraper)
+    # craftMessage() contains a constant, SLACK_MESSAGE, that contains the text displayed in the Slack message.
+    def craftMessage(self):
+        self.SLACK_MESSAGE = {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": (
+                    f"The five most recent + '\033[1m' + {self.keyword} + '\033[0m' + positions in + '\033[1m' + {self.locale} + '\033[0m' + are:\n\n + '\033[1m' + {self.combinedPosTups()[:6]} + '\033[0m' + \n\nClick here to see more data about the most recent {self.keyword} positions in {self.locale}."
+                ),
+            },
+        }
+    # getMessagePayload() crafts and returns the entire message payload as a dictionary.
+    def getMessagePayload(self):
+        return {
+            "channel": self.slackChannel,
+            "blocks": [
+                self.SLACK_MESSAGE,
+                *self.insertPositionsIntoSlackMessageDict(),
+            ],
+        }
+
+# print(WebScraperBot('#job-retriever', 'product-designer', 'california').combinedPosTups())
+
+'''
+^ Note On Print():
+"#job-retriever" slackChannel parameter is useless without importing "from slack import WebClient"
+
+See WebScraperTest.py for import.
+'''
