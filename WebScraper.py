@@ -10,8 +10,8 @@ class WebScraperBot:
     # __init__() takes in slackChannel, keyword, and locale as parameters. Then the class constructor gets html from the param-specified LinkedIn jobs search page and sets soup as an instance.
     def __init__(self, slackChannel, keyword, locale):
         self.slackChannel = slackChannel
-        self.keyword = keyword.replace(keyword, '-', 1)
-        self.locale = locale.replace(locale, '-', 1)
+        self.keyword = keyword#.replace(keyword, '-', 1)
+        self.locale = locale#.replace(locale, '-', 1)
         link = f'https://www.linkedin.com/jobs/search?keywords={keyword}&location={locale}-fl&redirect=false&position=1&pageNum=0'
         self.soup = BeautifulSoup(requests.get(link).text, 'html.parser')
 
@@ -73,6 +73,8 @@ class WebScraperBot:
 
     # craftMessage() contains a constant, SLACK_MESSAGE, that contains the text displayed in the Slack message.
     def craftMessage(self):
+        #keyword = self.keyword.replace(self.keyword, ' ', 1)
+        #locale = self.locale.replace(self.locale, ' ', 1)
         SLACK_MESSAGE = {
             "type": "section",
             "text": {
