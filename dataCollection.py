@@ -7,6 +7,7 @@ import time
 
 def createDB(dbName):
     try:
+        path = os.path.dirname(os.path.abspath(__file__))
         conn = sqlite3.connect(path+'/'+dbName) #open the database if it already exists!
         cur = conn.cursor()
     except:
