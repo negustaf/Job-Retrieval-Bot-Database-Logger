@@ -6,7 +6,7 @@ import os
 slackWebClient = WebClient(token=os.environ.get("SLACK_TOKEN"))
 
 # Get new job postings.
-runWebScraperBot = WebScraperBot('#job-retriever', 'product-designer', 'california')
+runWebScraperBot = WebScraperBot('#job-retriever', 'product design intern', 'california')
 
 # Get the onboarding message payload.
 message = runWebScraperBot.getMessagePayload()

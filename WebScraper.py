@@ -10,8 +10,8 @@ class WebScraperBot:
     # __init__() takes in slackChannel, keyword, and locale as parameters. Then the class constructor gets html from the param-specified LinkedIn jobs search page and sets soup as an instance.
     def __init__(self, slackChannel, keyword, locale):
         self.slackChannel = slackChannel
-        self.keyword = keyword
-        self.locale = locale
+        self.keyword = keyword.replace(keyword, '-', 1)
+        self.locale = locale.replace(locale, '-', 1)
         link = f'https://www.linkedin.com/jobs/search?keywords={keyword}&location={locale}-fl&redirect=false&position=1&pageNum=0'
         self.soup = BeautifulSoup(requests.get(link).text, 'html.parser')
 
@@ -43,39 +43,59 @@ class WebScraperBot:
     
     # combinedPositionTups() takes lists from posTitles, posCompanies, and posURLs and returns the items from each list in an order-respective list of tuples.
     def combinedPosTups(self):
-        positionsData = []
-        for i in range(len(self.fetchTitles())):
-            tup = (self.fetchTitles()[i], self.fetchCompanies()[i], self.fetchURLs()[i])
-            positionsData.append(tup)
-        return positionsData
+        posDataLst = []
+        if self.fetchTitles() != None:
+            for i in range(len(self.fetchTitles())):
+                tup = (self.fetchTitles()[i], self.fetchCompanies()[i], self.fetchURLs()[i])
+                posDataLst.append(tup)
+            return posDataLst
+        else:
+            return 'There are no new job postings for this position. Try again in 10 seconds.'
     
-    # insertPositionsIntoSlackMessageDict() takes combinedPosTups()'s returned tuple list of recent job position data and puts it into the Slack message dictionary.
-    def insertPositionsIntoSlackMessageDict(self):
-        text = self.combinedPosTups()
+    # craftPosStr() takes the tuple list from combinedPosTups() and crafts a string from the data to cooperate with the Slack API's message payload requirements. The string stops returning after 5 jobs, 12 pieces of data (3 per job: title, company, url).
+    def craftPosStr(self):
+        comStr = ''
+        count = 0
+        for i in self.combinedPosTups():
+            comStr += '\n'
+            if count != 4:
+                count += 1
+                comStr += ', '.join(i)
+                comStr += '\n\n'
+            if count == 4:
+                comStr += ', '.join(i)
+                return comStr
+    
+    # insertPositionsIntoSlackMessageDict() takes craftPosStr()'s returned tuple list of recent job position data and puts it into the Slack message dictionary.
+    def insertPosIntoSlackMessageDict(self):
+        text = self.craftPosStr()
         return {"type": "section", "text": {"type": "mrkdwn", "text": text}},
 
     # craftMessage() contains a constant, SLACK_MESSAGE, that contains the text displayed in the Slack message.
     def craftMessage(self):
-        self.SLACK_MESSAGE = {
+        SLACK_MESSAGE = {
             "type": "section",
             "text": {
                 "type": "mrkdwn",
                 "text": (
-                    f"The five most recent + '\033[1m' + {self.keyword} + '\033[0m' + positions in + '\033[1m' + {self.locale} + '\033[0m' + are:\n\n + '\033[1m' + {self.combinedPosTups()[:6]} + '\033[0m' + \n\nClick here to see more data about the most recent {self.keyword} positions in {self.locale}."
-                ),
+                    #"testing string only"
+                    f"The five most recent {self.keyword} positions in {self.locale} are: \n{self.craftPosStr()}"
+                ),# + {self.craftPosStr()} # \n\nClick here to see more data about the most recent {self.keyword} positions in {self.locale}
             },
         }
+        return SLACK_MESSAGE
     # getMessagePayload() crafts and returns the entire message payload as a dictionary.
     def getMessagePayload(self):
         return {
             "channel": self.slackChannel,
             "blocks": [
-                self.SLACK_MESSAGE,
-                *self.insertPositionsIntoSlackMessageDict(),
+                self.craftMessage(),
+                #*self.craftPosStr(),
             ],
         }
 
 # print(WebScraperBot('#job-retriever', 'product-designer', 'california').combinedPosTups())
+print(WebScraperBot('#job-retriever', 'product design intern', 'california').craftPosStr())
 
 '''
 ^ Note On Print():
