@@ -73,18 +73,18 @@ def getLocationDict(cur, conn): #step 1.1, get a dict of UNIQUE LOCATIONS, numbe
         coords = getCoordinates(key)
         for coord in coords:
             locationDict[key].append(coord)'''
-
-    return locationDict
+    sortedDict = sorted(locationDict.items(), key=lambda item: item[1])
+    return sortedDict
     
 def writeCSV(locationDict, path, csvName): #writes csv file that the visualization can use
     f = csv.writer(open(path+'/'+csvName, 'w', newline= ''))
-    f.writerow(["Location","Number of Postings","Latitude","Longitude"])
+    f.writerow(["Location","Postings","Latitude","Longitude"])
     for entry in locationDict:
         f.writerow([entry, locationDict[entry][0],locationDict[entry][1],locationDict[entry][2]])
     
     
 
-
+#do we need this?
 def getNumPostings(cur, conn, locale, dbName): #step 2, gets the number of postings by location
     cur.execute("SELECT position_title FROM job_postings WHERE locations = (?)", (locale))
 
@@ -95,4 +95,4 @@ if __name__ == '__main__':
     #print(getCoordinates(town))
     cur, conn, path = openDB("Automotive_Engineer.db")
     dicto = getLocationDict(cur, conn)
-    writeCSV(dicto, path, "automotive_engineer_map_data.csv")
+    writeCSV(dicto, path, "testtest.csv")
