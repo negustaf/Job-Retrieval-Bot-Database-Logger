@@ -48,13 +48,13 @@ if __name__ == '__main__':
 
     #collectForAnHour(path,"dataCollection.py")
     #exec(open(path+'/'+"dataCollection.py").read())
-    '''print('Performing initial scrape...')
+    print('Performing initial scrape...')
     for i in range(6):
         exec(open(path+'/'+"dataCollection.py").read())
         print("Waiting 10 minutes")
         time.sleep(600)
     print("1 hour of collection finished")
-'''
+
     iaFinalCount = checkSize(curIA, connIA)
     uxFinalCount = checkSize(curUX, connUX)
 
