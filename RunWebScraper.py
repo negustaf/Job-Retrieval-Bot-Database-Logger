@@ -1,8 +1,10 @@
+# Noah Gustafson & Maxton Fil
+
 from slack import WebClient
 from WebScraper import WebScraperBot
 import os
 
-# Create a slack client.
+# Create a Slack client.
 slackWebClient = WebClient(token=os.environ.get("SLACK_TOKEN"))
 
 # Get new job postings.
