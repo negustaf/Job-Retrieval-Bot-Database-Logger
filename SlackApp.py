@@ -1,11 +1,11 @@
 # Noah Gustafson & Maxton Fil
 
 import re
-import os #To access environment variables.
-import logging #To log the events of the app.
-from flask import Flask #To create a Flask app.
-from slack import WebClient #To send messages via Slack.
-from slackeventsapi import SlackEventAdapter #To receive events from Slack and process them.
+import os
+import logging
+from flask import Flask
+from slack import WebClient
+from slackeventsapi import SlackEventAdapter
 from WebScraper import WebScraperBot
 
 # Initialize a Flask app to host the events adapter.
