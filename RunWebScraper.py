@@ -1,5 +1,3 @@
-# Noah Gustafson & Maxton Fil
-
 from slack import WebClient
 from WebScraper import WebScraperBot
 import os
