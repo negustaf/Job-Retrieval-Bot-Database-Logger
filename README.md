@@ -1,5 +1,5 @@
 # SI206-Final-Project
-Final Project for SI206 F2020.
+Noah Gustafson & Maxton Fil's Final Project for SI206 F2020.
 
 Notion Documentation: https://www.notion.so/Job-Retrieval-DB-Slack-Bot-94992000f1a74279a20f04919c93b6a5 
 
