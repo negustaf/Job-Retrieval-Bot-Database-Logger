@@ -1,5 +1,3 @@
-# Noah Gustafson & Maxton Fil
-
 from bs4 import BeautifulSoup
 import requests
 import os
