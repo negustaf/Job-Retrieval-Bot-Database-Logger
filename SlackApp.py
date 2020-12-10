@@ -1,5 +1,3 @@
-# Noah Gustafson & Maxton Fil
-
 import re
 import os
 import logging
